@@ -14,10 +14,13 @@ def main():
 
 @app.route('/', methods=['POST'])
 def transliterate():
-  input = request.form['input']
-  output = transliteration.run(input)
-  learned = transliteration.is_learned(input)
+  if request.json:
+    input = request.json.get('input', '')
+    output = transliteration.run(input) if input else ''
+    learned = transliteration.is_learned(input)
+  else:
+    input, output, learned = '', '', False
   return jsonify({'input': input, 'output': output, 'learned': learned})
 
 if __name__ == '__main__':
-  app.run(host=os.getenv('IP', '0.0.0.0'), port=int(os.getenv('PORT', 8080)))
+  app.run(debug=True, host=os.getenv('IP', '0.0.0.0'), port=int(os.getenv('PORT', 8080)))
